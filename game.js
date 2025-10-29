@@ -3,17 +3,77 @@ let NUMBER_OF_LETTERS = 2;
 let guessesRemaining = NUMBER_OF_GUESSES;
 let currentGuess = [];
 let nextLetter = 0;
-let rightGuessString = "to"
-console.log(rightGuessString)
+let WORDS = {};
+let MAX_WORD_LENGTH = 0;
+// Load words and then start the game once words are available
+loadWords("words.txt").then(() => {
+    gameloop();
+});
+let rightGuessString = ""
 
-function initBoard() {
+function loadWords(filePath) {
+    // fetch file and parse words into WORDS object
+    return fetch(filePath)
+        .then(response => response.text())
+        .then(data => {
+            data.split("\n").forEach(word => {
+                word = word.trim();
+                if (word.length > 0) {
+                    let len = word.length;
+                    if (!WORDS[len]) {
+                        WORDS[len] = [];
+                    }
+                    WORDS[len].push(word);
+                }
+            });
+
+            // compute max available word length
+            const lengths = Object.keys(WORDS).map(k => Number(k)).filter(n => !isNaN(n));
+            if (lengths.length > 0) {
+                MAX_WORD_LENGTH = Math.max(...lengths);
+            }
+        });
+}
+
+function reset_game() {
+    guessesRemaining = NUMBER_OF_GUESSES;
+    currentGuess = [];
+    nextLetter = 0;
+    // Ensure we have words loaded for the chosen length before selecting one
+    if (!WORDS[NUMBER_OF_LETTERS] || WORDS[NUMBER_OF_LETTERS].length === 0) {
+        // If words haven't loaded yet or there are no words of that length,
+        // retry shortly. This avoids accessing `.length` of undefined.
+        console.warn(`Words for length ${NUMBER_OF_LETTERS} not available yet — retrying reset_game shortly.`);
+        setTimeout(reset_game, 100);
+        return;
+    }
+
+    // Use the same variable name used elsewhere (`rightGuessString`)
+    rightGuessString = WORDS[NUMBER_OF_LETTERS][Math.floor(Math.random() * WORDS[NUMBER_OF_LETTERS].length)];
+    // Reset keyboard colors before creating the new board
+    resetKeyboard();
+    createBoard(NUMBER_OF_GUESSES, NUMBER_OF_LETTERS);
+}
+
+function resetKeyboard() {
+    for (const elem of document.getElementsByClassName("keyboard-button")) {
+        elem.style.backgroundColor = '';
+    }
+}
+
+function createBoard(noGuesses, noLetters) {
     let board = document.getElementById("game-board");
 
-    for (let i = 0; i < NUMBER_OF_GUESSES; i++) {
+    //reset board
+    while (board.firstChild) {
+        board.removeChild(board.firstChild);
+    }
+
+    for (let i = 0; i < noGuesses; i++) {
         let row = document.createElement("div")
         row.className = "letter-row"
 
-        for (let j = 0; j < NUMBER_OF_LETTERS; j++) {
+        for (let j = 0; j < noLetters; j++) {
             let box = document.createElement("div")
             box.className = "letter-box"
             row.appendChild(box)
@@ -22,8 +82,6 @@ function initBoard() {
         board.appendChild(row)
     }
 }
-
-initBoard()
 
 document.addEventListener("keyup", (e) => {
 
@@ -129,9 +187,21 @@ function checkGuess() {
     }
 
     if (guessString === rightGuessString) {
-        toastr.success("You guessed right! Game over!")
-        guessesRemaining = 0
-        return
+        // If there are longer words available, advance to the next length
+        if (NUMBER_OF_LETTERS < MAX_WORD_LENGTH) {
+            toastr.success(`Correct! Advancing to ${NUMBER_OF_LETTERS + 1}-letter words.`)
+            NUMBER_OF_LETTERS += 1
+            // small delay to let animations/toasts play before starting next round
+            setTimeout(() => {
+                reset_game()
+            }, 1000)
+            return
+        } else {
+            // Final congratulations when highest length reached
+            toastr.success("You completed all word lengths — Congratulations!")
+            guessesRemaining = 0
+            return
+        }
     } else {
         guessesRemaining -= 1;
         currentGuess = [];
@@ -196,3 +266,9 @@ const animateCSS = (element, animation, prefix = 'animate__') =>
 
         node.addEventListener('animationend', handleAnimationEnd, { once: true });
     });
+
+
+function gameloop() {
+    reset_game()
+
+}
