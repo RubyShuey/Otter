@@ -2,7 +2,7 @@ name: Deploy static site to GitHub Pages
 
 on:
   workflow_dispatch:
-    
+
 permissions:
   contents: read
   pages: write
@@ -28,9 +28,9 @@ jobs:
           # If you add other assets (fonts, icons), include them here.
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v4
         with:
           path: out
 
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
