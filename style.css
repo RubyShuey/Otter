@@ -1,70 +1,328 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    background-color: lightblue;
+    background: linear-gradient(135deg, #0f5132 0%, #198754 50%, #20c997 100%);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 10px;
+    overflow: hidden;
 }
-
-h1 {
-    color: teal;
-}
-
-.otter {
-    margin-right: 1em;
-}
-
 
 .flex-2 {
     display: flex;
-    flex: auto;
-    justify-content: left;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+.flex-2>div:first-child {
+    text-align: center;
+}
+
+.otter {
+    max-width: 150px;
+    height: auto;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+h1 {
+    color: #ffffff;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    letter-spacing: 1px;
+}
+
+p {
+    color: #ffffff;
+    font-size: 1.1rem;
+    margin: 8px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#niveau-display {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+#niveau-value {
+    color: #ffd700;
+    font-weight: 900;
+    font-size: 1.5rem;
 }
 
 #game-board {
     display: flex;
     align-items: center;
     flex-direction: column;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .letter-box {
-    border: 2px solid gray;
-    border-radius: 3px;
-    margin: 2px;
-    font-size: 2.5rem;
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    margin: 4px;
+    font-size: 2rem;
     font-weight: 700;
-    height: 3rem;
-    width: 3rem;
+    height: 60px;
+    width: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
     text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.letter-box:hover:not(.filled-box) {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.6);
 }
 
 .filled-box {
-    border: 2px solid black;
+    border: 3px solid rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .letter-row {
     display: flex;
+    gap: 8px;
 }
 
 #keyboard-cont {
-    margin: 1rem 0;
+    margin: 20px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 100%;
 }
 
 #keyboard-cont div {
     display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.second-row {
-    margin: 0.5rem 0;
+.first-row,
+.second-row,
+.third-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .keyboard-button {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    padding: 0.5rem;
-    margin: 0 2px;
+    padding: 10px 12px;
     cursor: pointer;
     text-transform: uppercase;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    color: #ffffff;
+    transition: all 0.2s ease;
+    min-width: 40px;
+    text-align: center;
+}
+
+.keyboard-button:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
+    border-color: rgba(255, 255, 255, 0.7);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.keyboard-button:active {
+    transform: translateY(0px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    p {
+        font-size: 1rem;
+    }
+
+    .letter-box {
+        height: 50px;
+        width: 50px;
+        font-size: 1.5rem;
+    }
+
+    .keyboard-button {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+        min-width: 36px;
+    }
+
+    #game-board {
+        padding: 20px;
+    }
+
+    #keyboard-cont {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    .flex-2>div:first-child {
+        display: none;
+    }
+
+    .flex-2 {
+        gap: 12px;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+        margin-bottom: 5px;
+    }
+
+    p {
+        font-size: 0.95rem;
+        margin: 4px 0;
+    }
+
+    #niveau-display {
+        font-size: 1.1rem;
+        padding: 10px 20px;
+    }
+
+    #game-board {
+        padding: 15px;
+        gap: 8px;
+    }
+
+    #keyboard-cont {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .letter-box {
+        height: 48px;
+        width: 48px;
+        font-size: 1.4rem;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        margin: 3px;
+    }
+
+    .keyboard-button {
+        padding: 7px 9px;
+        font-size: 0.75rem;
+        min-width: 34px;
+    }
+
+    .letter-row {
+        gap: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+    }
+
+    .flex-2 {
+        gap: 10px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 3px;
+    }
+
+    p {
+        font-size: 0.85rem;
+        margin: 2px 0;
+    }
+
+    #niveau-display {
+        font-size: 1rem;
+        padding: 8px 16px;
+    }
+
+    .letter-box {
+        height: 42px;
+        width: 42px;
+        font-size: 1.1rem;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        margin: 2px;
+    }
+
+    .keyboard-button {
+        padding: 6px 8px;
+        font-size: 0.7rem;
+        min-width: 30px;
+    }
+
+    #game-board {
+        padding: 12px;
+        gap: 6px;
+    }
+
+    #keyboard-cont {
+        padding: 10px;
+        gap: 6px;
+    }
+
+    .letter-row {
+        gap: 5px;
+    }
+
+    .first-row,
+    .second-row,
+    .third-row {
+        gap: 4px;
+    }
 }
