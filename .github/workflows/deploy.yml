@@ -1,0 +1,36 @@
+name: Deploy static site to GitHub Pages
+
+on:
+  workflow_dispatch:
+    
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare site files
+        run: |
+          # Create an output directory and copy the static site files there.
+          mkdir -p out
+          cp -v index.html out/ || true
+          cp -v game.js out/ || true
+          cp -v style.css out/ || true
+          cp -v words.txt out/ || true
+          cp -v odder.jpeg out/ || true
+          # If you add other assets (fonts, icons), include them here.
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: out
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
