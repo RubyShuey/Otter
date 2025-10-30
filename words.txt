@@ -28,3 +28,4 @@ bedst
 plante
 sjette
 vindue
+hjælpe
