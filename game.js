@@ -6,9 +6,33 @@ let nextLetter = 0;
 let WORDS = {};
 let MAX_WORD_LENGTH = 0;
 let rightGuessString = "";
+let currentLanguage = "";
+let roundsWithoutCorrectGuess = 0;
+let hintGiven = false;
 
-// Initialize game
-loadWords("words.txt").then(() => gameloop());
+// Initialize language selection
+initializeLanguageSelection();
+
+function initializeLanguageSelection() {
+    const overlay = document.getElementById("language-overlay");
+    const langButtons = document.querySelectorAll(".language-btn");
+
+    langButtons.forEach(button => {
+        button.addEventListener("click", (e) => {
+            const lang = e.currentTarget.dataset.lang;
+            selectLanguage(lang);
+            overlay.classList.add("hidden");
+        });
+    });
+
+
+}
+
+function selectLanguage(lang) {
+    currentLanguage = lang;
+    const wordFile = lang === "da" ? "words_da.txt" : "words_en.txt";
+    loadWords(wordFile).then(() => gameloop());
+}
 
 function loadWords(filePath) {
     return fetch(filePath)
@@ -38,6 +62,8 @@ function reset_game() {
     guessesRemaining = NUMBER_OF_GUESSES;
     currentGuess = [];
     nextLetter = 0;
+    roundsWithoutCorrectGuess = 0;
+    hintGiven = false;
     document.getElementById("niveau-value").textContent = NUMBER_OF_LETTERS;
 
     if (!WORDS[NUMBER_OF_LETTERS] || WORDS[NUMBER_OF_LETTERS].length === 0) {
@@ -149,7 +175,7 @@ function checkGuess() {
         const letterPosition = rightGuess.indexOf(letter);
         if (letterPosition !== -1) {
             letterColor =
-                letter === rightGuess[i] ? "green" : "yellow";
+                letter === rightGuess[i] ? "green" : "#FF8C00";
             rightGuess[letterPosition] = "#";
         }
 
@@ -166,12 +192,54 @@ function checkGuess() {
         handleCorrectGuess();
     } else {
         guessesRemaining -= 1;
+        roundsWithoutCorrectGuess += 1;
         currentGuess = [];
         nextLetter = 0;
+
+        // Check if hint should be given
+        if (roundsWithoutCorrectGuess === 3 && !hintGiven) {
+            giveHint();
+        }
 
         if (guessesRemaining === 0) {
             toastr.error("You've run out of guesses! Game over!");
             toastr.info(`The right word was: "${rightGuessString}"`);
+        }
+    }
+}
+
+function giveHint() {
+    // Get unique letters in the word that haven't been guessed correctly yet
+    const wordLetters = [...new Set(rightGuessString)];
+    const revealedLetters = new Set();
+
+    // Find which letters are already revealed (green or orange on keyboard)
+    for (const elem of document.getElementsByClassName("keyboard-button")) {
+        const bgColor = elem.style.backgroundColor;
+        if (bgColor === "green" || bgColor === "#FF8C00" || bgColor === "grey") {
+            revealedLetters.add(elem.textContent.toLowerCase());
+        }
+    }
+
+    // Find unrevealed letters that are in the word
+    const unrevealedLetters = wordLetters.filter(
+        letter => !revealedLetters.has(letter)
+    );
+
+    if (unrevealedLetters.length === 0) return;
+
+    // Pick a random unrevealed letter
+    const hintLetter = unrevealedLetters[
+        Math.floor(Math.random() * unrevealedLetters.length)
+    ];
+
+    // Find and shade this letter orange-yellow on the keyboard
+    for (const elem of document.getElementsByClassName("keyboard-button")) {
+        if (elem.textContent.toLowerCase() === hintLetter) {
+            elem.style.backgroundColor = "#FF8C00";
+            hintGiven = true;
+            toastr.info(`Hint: The letter ${hintLetter.toUpperCase()} is in the word!`);
+            break;
         }
     }
 }
@@ -200,7 +268,7 @@ function shadeKeyBoard(letter, color) {
 
         const oldColor = elem.style.backgroundColor;
         if (oldColor === "green" ||
-            (oldColor === "yellow" && color !== "green")) {
+            (oldColor === "#FF8C00" && color !== "green")) {
             return;
         }
 

@@ -6,7 +6,8 @@ on:
     branches:
       - main
     paths:
-      - 'words.txt'
+      - 'words_da.txt'
+      - 'words_en.txt'
 
 permissions:
   contents: read
@@ -28,7 +29,8 @@ jobs:
           cp -v index.html out/ || true
           cp -v game.js out/ || true
           cp -v style.css out/ || true
-          cp -v words.txt out/ || true
+          cp -v words_da.txt out/ || true
+          cp -v words_en.txt out/ || true
           cp -v odder.jpeg out/ || true
           # If you add other assets (fonts, icons), include them here.
 
