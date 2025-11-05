@@ -51,11 +51,16 @@ flag
 seat
 feet
 foot
-
+love
 role
 page
 show
 shop
+hurt
+door
+foot
+hand
+head
 right
 chair
 house
